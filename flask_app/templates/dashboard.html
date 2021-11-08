@@ -30,7 +30,14 @@
                     <td>{{openmic.type}}</td>
                     <td>{{openmic.date}}</td>
                     <td>#</td>
-                    <td>Edit | Delete | Favorite</td>
+                    <td>
+                        <a href="/openmics/{{openmic.id}}" class="btn btn-link">View</a> | 
+                        {% if user.id == openmic.user_id %}
+                            <a href="/openmics/edit/{{openmic.id}}" class="btn btn-link">Edit</a> | 
+
+                            <a href="/openmics/delete/{{openmic.id}}" class="btn btn-danger">Delete</a> | 
+                        {% endif %}
+                        Favorite</td>
                 </tr>
                 {% endfor %}
             </tbody>

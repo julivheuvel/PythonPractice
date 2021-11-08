@@ -7,6 +7,7 @@ from flask_app.config.mysqlconnection import connectToMySQL
 # ==================
 # MODEL IMPORTS
 # ==================
+from flask_app.models import user
 
 # ==================
 # REDIRECT ATTRIBUTES FOR FLASH MESSAGES
@@ -30,6 +31,9 @@ class OpenMic:
 
         # list of users who favorited this openmic
         self.users_who_favorited = []
+
+        # get single instance of user who posted openmic
+        self.posted_by = {}
 
     # ==================
     # VALIDATIONS
@@ -60,7 +64,7 @@ class OpenMic:
         return connectToMySQL("openmic_schema").query_db(query, data)
     
     # ==================
-    # GET ALL OPENMICS METHOD
+    # GET ALL METHOD
     # ==================
     @classmethod
     def all_openmics(cls):
@@ -71,3 +75,45 @@ class OpenMic:
         for one_openmic in results:
             openmics.append(cls(one_openmic))
         return openmics
+    
+    # ==================
+    # VIEW ONE METHOD
+    # ==================
+    @classmethod
+    def one_openmic(cls, data):
+        query = "SELECT * FROM openmics JOIN users ON users.id = user_id WHERE openmics.id = %(id)s;"
+        results = connectToMySQL('openmic_schema').query_db(query, data)
+        
+        openmic = cls(results[0])
+        # pulling out specific data of the user object to store in posted_by
+        user_data = {
+            "id" : results[0]['users.id'],
+            "first_name" : results[0]['first_name'],
+            "last_name" : results[0]['last_name'],
+            "email" : results[0]['email'],
+            "password" : results[0]['password'],
+            "created_at" : results[0]['users.created_at'],
+            "updated_at" : results[0]['users.updated_at'],
+        }
+        
+        # posted_by = specific instance of user
+        openmic.posted_by = user.User(user_data)
+        return openmic
+    
+    # ==================
+    # UPDATE ONE METHOD
+    # ==================
+    @classmethod
+    def update_openmic(cls, data):
+        query = "UPDATE openmics SET venue = %(venue)s, type = %(type)s, date = %(date)s, description = %(description)s, updated_at = NOW() WHERE id = %(id)s;"
+        results = connectToMySQL('openmic_schema').query_db(query, data)
+        return results
+
+    # ==================
+    # DELETE ONE METHOD
+    # ==================
+    @classmethod
+    def delete(cls, data):
+        query = "DELETE FROM openmics WHERE id = %(id)s;"
+        results = connectToMySQL('openmic_schema').query_db(query, data)
+        return results
