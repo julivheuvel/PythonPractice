@@ -9,6 +9,7 @@ from flask import render_template, request, redirect, session
 # MODEL IMPORTS
 # ==================
 from flask_app.models.user import User
+from flask_app.models.openmic import OpenMic
 
 
 # ==================
@@ -105,12 +106,16 @@ def dashboard():
         flash("Please register/login before you proceed to the website")
         return redirect("/")
     
+    # get logged in user information
     data = {
         "id" : session["user_id"]
     }
     user = User.get_one(data)
 
-    return render_template("dashboard.html", user = user)
+    # get all openmic info
+    openmics = OpenMic.all_openmics()
+
+    return render_template("dashboard.html", user = user, openmics = openmics)
 
 # ==================
 # LOGOUT ROUTE

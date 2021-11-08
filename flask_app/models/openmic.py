@@ -58,3 +58,16 @@ class OpenMic:
     def save(cls, data):
         query = "INSERT INTO openmics (venue, type, date, description, user_id, created_at, updated_at) VALUES (%(venue)s, %(type)s, %(date)s, %(description)s, %(user_id)s, NOW(), NOW());"
         return connectToMySQL("openmic_schema").query_db(query, data)
+    
+    # ==================
+    # GET ALL OPENMICS METHOD
+    # ==================
+    @classmethod
+    def all_openmics(cls):
+        query = "SELECT * FROM openmics;"
+        results = connectToMySQL('openmic_schema').query_db(query)
+        
+        openmics = []
+        for one_openmic in results:
+            openmics.append(cls(one_openmic))
+        return openmics

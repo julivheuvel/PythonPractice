@@ -12,7 +12,29 @@
     <div class="container mt-3">
         <a href="/logout" class="btn btn-danger">Logout</a>
         <h1>Welcome {{user.first_name}}!</h1>
-
+        <h5>All OpenMic Events</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Favorites</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for openmic in openmics %}
+                <tr>
+                    <td>{{openmic.venue}}</td>
+                    <td>{{openmic.type}}</td>
+                    <td>{{openmic.date}}</td>
+                    <td>#</td>
+                    <td>Edit | Delete | Favorite</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         <a href="/openmics/create" class="btn btn-warning">Create an OpenMic Event</a>
 
 
