@@ -65,8 +65,9 @@ def view_one(id):
     }
 
     openmic = OpenMic.one_openmic(data)
+    unfavorited_users = User.unfavorited_users(data)
     
-    return render_template("view_openmic.html", openmic = openmic)
+    return render_template("view_openmic.html", openmic = openmic, unfavorited_users = unfavorited_users)
 
 # ==================
 # EDIT OPENMIC ROUTE

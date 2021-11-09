@@ -69,9 +69,8 @@ class OpenMic:
     @classmethod
     def all_openmics(cls):
         query = "SELECT * FROM openmics;"
-        results = connectToMySQL('openmic_schema').query_db(query)
-        
         openmics = []
+        results = connectToMySQL('openmic_schema').query_db(query)
         for one_openmic in results:
             openmics.append(cls(one_openmic))
         return openmics
@@ -117,3 +116,34 @@ class OpenMic:
         query = "DELETE FROM openmics WHERE id = %(id)s;"
         results = connectToMySQL('openmic_schema').query_db(query, data)
         return results
+
+    # ==================
+    # GET ONE BY ID USING FAVORITES TABLE METHOD
+    # ==================
+    def get_by_id(cls, data):
+        query = "SELECT * FROM openmics LEFT JOIN favorites ON openmics.id = favorites.openmic_id LEFT JOIN users ON users.id = favorites.user_id WHERE openmics.id = %(id)s;"
+        results = connectToMySQL('openmic_schema')
+
+        # creating the openmic into its own instance of a class
+        openmic = cls(results[0])
+
+        for openmic in results:
+            # edgecase checking if there is a user "connected/favorited" to an openmic == prevents from favoriting more than once
+            if openmic['authors.id'] == None:
+                break
+            # taking all the information from the specific user and connecting it with the openmic
+            data = {
+                "id" : openmic["users.id"],
+                "first_name" : openmic["first_name"],
+                "last_name" : openmic["last_name"],
+                "email" : openmic["email"],
+                "password" : openmic["password"],
+                "created_at" : openmic["users.created_at"],
+                "updated_at" : openmic["users.updated_at"],
+            }
+            openmic.users_who_favorited.append(user.User(data))
+        return openmic
+
+    # ==================
+    # UNFAVORITE METHOD
+    # ==================

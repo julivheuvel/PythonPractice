@@ -124,3 +124,20 @@ def dashboard():
 def logout():
     session.clear()
     return redirect("/")
+
+
+# ==================
+# FAVORITING ROUTE
+# ==================
+# POST
+@app.route('/favorite/openmic', methods=['POST'])
+def favorite_openmic():
+    data = {
+        'user_id' : request.form['user_id'],
+        'openmic_id' : request.form['openmic_id']
+    }
+    User.add_favorite(data)
+    return redirect(f"/user/{request.form['author_id']};")
+
+# RENDER
+

@@ -40,6 +40,8 @@ class User:
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
 
+        self.favorite_books = []
+
 
     # ==================
     # VALIDATIONS
@@ -95,3 +97,29 @@ class User:
         query = "SELECT * FROM users WHERE id = %(id)s;"
         results = connectToMySQL('openmic_schema').query_db(query, data)
         return cls(results[0])
+
+    # ==================
+    # GET ALL USERS METHOD
+    # ==================
+    @classmethod
+    def get_all(cls):
+        query = "SELECT * FROM users;"
+        users = []
+        results = connectToMySQL("openmic_schema").query_db(query)
+        # taking requested call and placing it into objects to parse through
+        for row in results:
+            users.append(cls(row))
+        return users
+
+    # ==================
+    # UNFAVORITED USERS METHOD
+    # ==================
+    @classmethod
+    def unfavorited_users(cls, data):
+        # Looking for users who still have not (NOT IN) been connected (favorited) to an openmic
+        query = "SELECT * FROM users WHERE users.id NOT IN (SELECT user_id FROM favorites WHERE openmic_id = %(id)s);"
+        users = []
+        results = connectToMySQL('openmic_schema').query_db(query, data)
+        for row in results:
+            users.append(cls(row))
+        return users
